@@ -16,7 +16,7 @@ get_teams = requests.get(
 )
 
 search_terms_str = ', '.join([f'"{term}"' for term in SEARCH_TERMS])
-print(f'Searching for term(s) {search_terms_str} ...')
+print(f'Searching for term(s): {search_terms_str} ...')
 
 for team in get_teams.json():
     team_slug = team['slug']

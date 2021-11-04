@@ -2,25 +2,23 @@ import requests
 import sys
 import os
 
-# Step 1. source config.sh
-
 ORG = os.environ['ORG']
 USER = os.environ['USER']
 PERSONAL_ACCESS_TOKEN = os.environ['PERSONAL_ACCESS_TOKEN']
 GITHUB_API_URL = 'https://api.github.com'
 HEADERS = {'Accept': 'application/vnd.github.v3+json'}
-SEARCH_TERM = sys.argv[1]
+SEARCH_TERMS = [arg.lower() for arg in sys.argv[1:]]
 
-
-# Step 2. source config.sh
 get_teams = requests.get(
     url=f'{GITHUB_API_URL}/orgs/{ORG}/teams',
     auth=(USER, PERSONAL_ACCESS_TOKEN),
     headers=HEADERS,
 )
-print(f'Searching for "{SEARCH_TERM}" ...')
-for team in get_teams.json():
 
+search_terms_str = ', '.join([f'"{term}"' for term in SEARCH_TERMS])
+print(f'Searching for term(s) {search_terms_str} ...')
+
+for team in get_teams.json():
     team_slug = team['slug']
     team_name = team['name']
     print(f'In team {team_name}')
@@ -39,9 +37,10 @@ for team in get_teams.json():
         page += 1
         for discussion in get_discussions_json:
             dis_title = discussion['title']
-            if 'twil' not in dis_title.lower():
+            title_and_body = ' '.join([dis_title, discussion['body']])
+            if any(
+                [word for word in SEARCH_TERMS if word not in title_and_body.lower()]
+            ):
                 continue
-            if SEARCH_TERM in dis_title or SEARCH_TERM in discussion['body']:
-                print(
-                    f'Found in discussion "{dis_title}" at {discussion["html_url"]}'
-                )
+
+            print(f'Found in discussion "{dis_title}" at {discussion["html_url"]}')

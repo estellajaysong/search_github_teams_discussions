@@ -1,2 +1,3 @@
-# search_github_teams_discussions
-Search Github teams discussions for a specific term
+# Search Github Teams Discussions
+Search Github teams discussions for a specific term in title or body
+

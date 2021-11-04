@@ -44,3 +44,5 @@ for team in get_teams.json():
                 continue
 
             print(f'Found in discussion "{dis_title}" at {discussion["html_url"]}')
+
+print('Search complete')

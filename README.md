@@ -1,6 +1,6 @@
 # Search Github Teams Discussions
 
-Script to search Github team discussions for a specific term or terms in the title or body.
+Script to search Github teams discussions for a specific term or terms in the title or body.
 
 ## Authentication
 

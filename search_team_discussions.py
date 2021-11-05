@@ -1,6 +1,7 @@
-import requests
-import sys
 import os
+import sys
+
+import requests
 
 ORG = os.environ['ORG']
 USER = os.environ['USER']
@@ -26,21 +27,20 @@ for team in get_teams.json():
     url = f'{GITHUB_API_URL}/orgs/{ORG}/teams/{team_slug}/discussions'
     limit = 20
     page = 1
-    while True:
+    next_page = True
+    while next_page:
         params = {'per_page': limit, 'page': page}
         get_discussions = requests.get(
             url=url, auth=(USER, PERSONAL_ACCESS_TOKEN), headers=HEADERS, params=params
         )
         get_discussions_json = get_discussions.json()
         if len(get_discussions_json) < limit:
-            break
+            next_page = False
         page += 1
         for discussion in get_discussions_json:
             dis_title = discussion['title']
             title_and_body = ' '.join([dis_title, discussion['body']])
-            if any(
-                [word for word in SEARCH_TERMS if word not in title_and_body.lower()]
-            ):
+            if any([word for word in SEARCH_TERMS if word not in title_and_body.lower()]):
                 continue
 
             print(f'Found in discussion "{dis_title}" at {discussion["html_url"]}')

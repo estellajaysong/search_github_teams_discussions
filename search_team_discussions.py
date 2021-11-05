@@ -2,6 +2,7 @@ import os
 import sys
 
 import requests
+from rich import print as rprint
 
 ORG = os.environ['ORG']
 USER = os.environ['USER']
@@ -17,12 +18,12 @@ get_teams = requests.get(
 )
 
 search_terms_str = ', '.join([f'"{term}"' for term in SEARCH_TERMS])
-print(f'Searching for term(s): {search_terms_str} ...')
+rprint(f'Searching for term(s): {search_terms_str} ...')
 
 for team in get_teams.json():
     team_slug = team['slug']
     team_name = team['name']
-    print(f'In team {team_name}')
+    rprint(f'In team [red]{team_name}')
 
     url = f'{GITHUB_API_URL}/orgs/{ORG}/teams/{team_slug}/discussions'
     limit = 20
@@ -39,10 +40,12 @@ for team in get_teams.json():
         page += 1
         for discussion in get_discussions_json:
             dis_title = discussion['title']
+            author = discussion['author']['login']
             title_and_body = ' '.join([dis_title, discussion['body']])
             if any([word for word in SEARCH_TERMS if word not in title_and_body.lower()]):
                 continue
+            rprint(
+                f'Found in discussion "{dis_title}" at {discussion["html_url"]} by [blue]{author}'
+            )
 
-            print(f'Found in discussion "{dis_title}" at {discussion["html_url"]}')
-
-print('Search complete')
+rprint('[blue]Search complete')

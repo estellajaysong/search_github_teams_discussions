@@ -11,16 +11,19 @@ GITHUB_API_URL = 'https://api.github.com'
 HEADERS = {'Accept': 'application/vnd.github.v3+json'}
 SEARCH_TERMS = [arg.lower() for arg in sys.argv[1:]]
 
-get_teams = requests.get(
+teams_res = requests.get(
     url=f'{GITHUB_API_URL}/orgs/{ORG}/teams',
     auth=(USER, PERSONAL_ACCESS_TOKEN),
     headers=HEADERS,
-)
+).json()
+
+if 'message' in teams_res:
+    raise Exception(f'Unexpected response from Github API: {teams_res}')
 
 search_terms_str = ', '.join([f'"{term}"' for term in SEARCH_TERMS])
 rprint(f'Searching for term(s): {search_terms_str} ...')
 
-for team in get_teams.json():
+for team in teams_res:
     team_slug = team['slug']
     team_name = team['name']
     rprint(f'In team [red]{team_name}')
